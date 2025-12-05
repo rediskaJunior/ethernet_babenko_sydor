@@ -1,6 +1,6 @@
 # Практична робота Ethernet
 
-**Пристрій:** STM32F411 Black Pill  
+**Пристрій:** STM32F411 Black Pill  (Пізніше -- STM32F411E-Disco)
 **Транспорт:** Ethernet (W5500 SPI)  
 **Протокол:** HTTP/JSON  
 **Оновлення:** 1 Hz без миготіння
