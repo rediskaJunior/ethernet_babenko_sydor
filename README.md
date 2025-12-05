@@ -70,13 +70,10 @@
 # 1. Ping test
 ping 192.168.1.177
 
-# 2. ARP lookup
-arp -a | grep "192.168.1.177"
-
-# 3. HTTP test
+# 2. HTTP test
 curl http://192.168.1.177/status
 
-# 4. Відкрить в браузері
+# 3. Відкрить в браузері
 http://192.168.1.177/
 ```
 
@@ -91,3 +88,13 @@ http://192.168.1.177/
 | CLI process | Loop | Low |
 
 ---
+
+
+### Відео з демонстрацією роботи основного завдання:
+
+https://drive.google.com/file/d/1Kl5WMtwf7H1Yn9W5Zftcp3ezisavrfD7/view?usp=sharing
+
+--- 
+
+## Додаткові завдання:
+

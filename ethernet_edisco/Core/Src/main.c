@@ -87,7 +87,6 @@ static uint32_t gps_last_update = 0;
 static uint32_t env_last_update = 0;
 static uint32_t display_last_update = 0;
 
-/* HTML Page (minified, embedded) */
 const char index_html[] =
 "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
 "<meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -102,52 +101,30 @@ const char index_html[] =
 ".label{font-weight:bold;color:#555;}"
 ".value{font-size:1.3em;color:#007BFF;font-weight:bold;}"
 ".stale{color:#ff4444;font-size:0.85em;font-weight:bold;}"
-".good{color:#00aa00;}"
 ".badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:0.8em;font-weight:bold;}"
 ".fix-ok{background:#00aa00;color:white;}"
 ".fix-no{background:#ff4444;color:white;}"
 "#timestamp{text-align:center;color:#888;font-size:0.9em;margin-top:10px;}"
 "</style></head><body>"
 "<div class='container'>"
-"<h1>ðŸŒ STM32 Device Status</h1>"
+"<h1>STM32 Device Status</h1>"
 "<div class='card'>"
-"<h2>ðŸ“ GPS Position</h2>"
-"<div class='row'><span class='label'>Latitude:</span><span id='lat' class='value'>--</span></div>"
-"<div class='row'><span class='label'>Longitude:</span><span id='lon' class='value'>--</span></div>"
-"<div class='row'><span class='label'>Fix Status:</span><span id='fix' class='badge'>--</span></div>"
-"<div class='row'><span class='label'>Satellites:</span><span id='sats' class='value'>--</span></div>"
-"<div class='row'><span class='label'>UTC Time:</span><span id='utc' class='value'>--</span></div>"
-"<div id='gps_stale' class='stale'></div>"
+"<h2>GPS Position</h2>"
+"<div class='row'><span class='label'>Latitude:</span><span class='value'>--</span></div>"
+"<div class='row'><span class='label'>Longitude:</span><span class='value'>--</span></div>"
+"<div class='row'><span class='label'>Fix Status:</span><span class='badge fix-no'>NO FIX</span></div>"
+"<div class='row'><span class='label'>Satellites:</span><span class='value'>--</span></div>"
+"<div class='row'><span class='label'>UTC Time:</span><span class='value'>--</span></div>"
 "</div>"
 "<div class='card'>"
-"<h2>ðŸŒ¡ï¸ Environment Sensors</h2>"
-"<div class='row'><span class='label'>Temperature:</span><span id='temp' class='value'>--</span> Â°C</div>"
-"<div class='row'><span class='label'>Pressure:</span><span id='press' class='value'>--</span> hPa</div>"
-"<div class='row'><span class='label'>Humidity:</span><span id='hum' class='value'>--</span> %</div>"
-"<div id='env_stale' class='stale'></div>"
+"<h2>Environment Sensors</h2>"
+"<div class='row'><span class='label'>Temperature:</span><span class='value'>--</span> °C</div>"
+"<div class='row'><span class='label'>Pressure:</span><span class='value'>--</span> hPa</div>"
+"<div class='row'><span class='label'>Humidity:</span><span class='value'>--</span> %</div>"
 "</div>"
-"<div id='timestamp'></div>"
+"<div id='timestamp'>Connection error</div>"
 "</div>"
-"<script>"
-"function upd(){"
-"fetch('/status').then(r=>r.json()).then(d=>{"
-"document.getElementById('lat').textContent=d.gps.lat.toFixed(5);"
-"document.getElementById('lon').textContent=d.gps.lon.toFixed(5);"
-"document.getElementById('sats').textContent=d.gps.sats;"
-"document.getElementById('utc').textContent=d.time_utc;"
-"let fixEl=document.getElementById('fix');"
-"if(d.gps.fix>=2){fixEl.textContent='LOCKED';fixEl.className='badge fix-ok';}"
-"else{fixEl.textContent='NO FIX';fixEl.className='badge fix-no';}"
-"document.getElementById('temp').textContent=d.env.t_c.toFixed(1);"
-"document.getElementById('press').textContent=d.env.p_hpa.toFixed(1);"
-"document.getElementById('hum').textContent=d.env.rh_pct.toFixed(1);"
-"document.getElementById('gps_stale').textContent=d.stale_age_s.gps>3?'âš ï¸ GPS data is stale ('+d.stale_age_s.gps.toFixed(1)+'s old)':'';"
-"document.getElementById('env_stale').textContent=d.stale_age_s.env>3?'âš ï¸ Sensor data is stale ('+d.stale_age_s.env.toFixed(1)+'s old)':'';"
-"document.getElementById('timestamp').textContent='Last updated: '+new Date().toLocaleTimeString();"
-"}).catch(e=>{console.error(e);document.getElementById('timestamp').textContent='âŒ Connection error';});}"
-"setInterval(upd,1000);upd();"
-"</script></body></html>";
-
+"</body></html>";
 
 /* USER CODE END PV */
 
@@ -222,7 +199,7 @@ void http_server_process(void) {
                                    gps_data.hour, gps_data.min, gps_data.sec,
                                    time_str, sizeof(time_str));
 
-                    printf(json_buf, sizeof(json_buf),
+                    snprintf(json_buf, sizeof(json_buf),
                         "HTTP/1.1 200 OK\r\n"
                         "Content-Type: application/json\r\n"
                         "Access-Control-Allow-Origin: *\r\n"
