@@ -2,6 +2,8 @@
 #include "w5500.h"
 #include "main.h"
 #include <stdio.h>
+#include <ctype.h>
+
 
 /**
  * Open a socket
@@ -242,4 +244,15 @@ int close_socket(uint8_t sn)
 uint8_t get_socket_status(uint8_t sn)
 {
     return W5500_READ_REG(W5500_Sn_SR(sn));
+}
+
+
+static int strcasecmp(const char *s1, const char *s2) {
+    while (*s1 && *s2) {
+        int diff = tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+        if (diff != 0) return diff;
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
 }

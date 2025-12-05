@@ -25,15 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "main.h"
-#include "spi.h"
-#include "i2c.h"
-#include "usart.h"
-#include "gpio.h"
 #include "socket.h"
 #include "w5500.h"
 #include "wizchip_conf.h"
-//#include "dhcp.h"
 #include "gps.h"
 #include "nmea.h"
 #include "bme.h"
@@ -42,6 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include "mdns.h"
 
 /* USER CODE END Includes */
 
@@ -54,6 +49,7 @@
 /* USER CODE BEGIN PD */
 #define HTTP_SOCKET     0
 #define DHCP_SOCKET     1
+#define MDNS_SOCKET     2
 #define HTTP_PORT       80
 #define DATA_BUF_SIZE   2048
 
@@ -422,6 +418,13 @@ int main(void)
 	    setnetinfo(&gWIZNETINFO);
 	    net_initialized = 1;
 
+	    //Additional
+	    mdns_init("stm32f411panel");
+	    // Початковий анонс
+		HAL_Delay(500);
+		mdns_process(); // Відкрити сокет
+		HAL_Delay(100);
+
 	    w5500_diagnostic_test();
 	    HAL_Delay(2000);
 
@@ -466,17 +469,30 @@ int main(void)
 	    HAL_Delay(200);
 
 	    while(1)
-	    {
-	        if(net_initialized) http_server_process();
+	        {
+	            uint32_t now = HAL_GetTick();
 
-	        uint32_t now = HAL_GetTick();
-	        if(nmea_process()) { nmea_get_position(&gps_data); gps_last_update = now; }
-	        if(now - env_last_update > 1000) { if(bme280_read(&bme_data)) env_last_update = now; }
+	            if(net_initialized) {
+	                http_server_process();
+	                mdns_process();
+	            }
 
-	        if(now - display_last_update > 500) { display_update(); display_last_update = now; }
+	            if(nmea_process()) {
+	                nmea_get_position(&gps_data);
+	                gps_last_update = now;
+	            }
 
-	        HAL_Delay(5); // small delay to avoid tight loop
-	    }
+	            if(now - env_last_update > 1000) {
+	                if(bme280_read(&bme_data)) env_last_update = now;
+	            }
+
+	            if(now - display_last_update > 500) {
+	                display_update();
+	                display_last_update = now;
+	            }
+
+	            HAL_Delay(5);
+	        }
 }
 
 /**

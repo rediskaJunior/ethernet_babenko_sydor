@@ -79,15 +79,13 @@ http://192.168.1.177/
 
 ---
 
-| Задача | Період | Пріоритет |
-|--------|--------|-----------|
-| Sensor poll | 1000 ms | Medium |
-| Display update | 1000 ms | Low |
-| HTTP process | Loop | High |
-| DHCP run | 100 ms | Medium |
-| CLI process | Loop | Low |
+## Тестування w5500
 
----
+Розробили фукнції тестування підключення (відкриття socket, тд.), які теж виводили на екран і могли відслідковувати роботу мережі.
+
+![Testw5500](image.png)
+
+Функції є частиною main.c
 
 
 ### Відео з демонстрацією роботи основного завдання:
@@ -97,4 +95,50 @@ https://drive.google.com/file/d/1Kl5WMtwf7H1Yn9W5Zftcp3ezisavrfD7/view?usp=shari
 --- 
 
 ## Додаткові завдання:
+
+Переробили проект з STM32 Black Pill на STM32F411E-Disco
+
+SPI1 (Display):
+- PA5 → ILI9341 SCK
+- PA6 → ILI9341 MISO
+- PA7 → ILI9341 MOSI
+- PE7 → ILI9341 CS
+- PE8 → ILI9341 DC
+- PE9 → ILI9341 RST
+- PE10 → ILI9341 BL
+
+SPI2 (W5500):
+- PB13 → W5500 SCK
+- PB14 → W5500 MISO
+- PB15 → W5500 MOSI
+- PE3 → W5500 CS
+- PE2 → W5500 RST
+- PE4 → W5500 INT
+
+I2C1 (BME280):
+- PB6 → BME280 SCL
+- PB7 → BME280 SDA
+
+USART1 (GPS):
+- PA9 → GPS RX
+- PA10 → GPS TX
+
+Power + Ground:
+- 3.3V and GND to all modules
+
+*mDNS (Bonjour services)*
+
+1. Завантажили Bonjour Services
+2. Написали mdns.c/h з реалізацією
+3. Викликали в main.c
+
+Тестування:
+
+```bash
+Відкрить в браузері
+http://stm32f411panel.local
+```
+
+### Результат - ping не проходить. Веб-сторінка не завантажується. Хоча ми розібрались з будовою і головною ідеєю.
+Витрачено: 7 людино-годин.
 
